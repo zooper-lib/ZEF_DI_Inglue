@@ -16,7 +16,7 @@ void main() {
 
   group('Adapter Singleton registrations', () {
     test('No registratin found', () {
-      final result = ServiceLocator.I.getAll();
+      final result = ServiceLocator.I.resolveAll();
 
       expect(result, isEmpty);
     });
@@ -33,10 +33,10 @@ void main() {
       );
 
       //* We are doing these checks only once here, and not in the other tests
-      expect(ServiceLocator.I.getAll(), isNotNull);
-      expect(ServiceLocator.I.getAll<Marble>(), isNotNull);
+      expect(ServiceLocator.I.resolveAll(), isNotNull);
+      expect(ServiceLocator.I.resolveAll<Marble>(), isNotNull);
 
-      expect(ServiceLocator.I.getAll<Marble>().length, 1);
+      expect(ServiceLocator.I.resolveAll<Marble>().length, 1);
     });
 
     test('Register a Singleton with Interface', () {
@@ -50,12 +50,12 @@ void main() {
         environment: null,
       );
 
-      expect(ServiceLocator.I.getAll<Marble>().length, 1);
-      expect(ServiceLocator.I.getAll<Stone>().length, 1);
-      expect(ServiceLocator.I.getAll<Thing>().length, 1);
+      expect(ServiceLocator.I.resolveAll<Marble>().length, 1);
+      expect(ServiceLocator.I.resolveAll<Stone>().length, 1);
+      expect(ServiceLocator.I.resolveAll<Thing>().length, 1);
     });
 
-    test('Register same Singletons multiple times - Expect only one instance', () {
+    test('Register same Singletons multiple times - Expect two instances', () {
       final instance1 = Marble();
       final instance2 = Marble();
 
@@ -75,7 +75,7 @@ void main() {
         environment: null,
       );
 
-      expect(ServiceLocator.I.getAll<Marble>().length, 1);
+      expect(ServiceLocator.I.resolveAll<Marble>().length, 2);
     });
 
     test('Register multiple Singletons', () {
@@ -98,10 +98,10 @@ void main() {
         environment: null,
       );
 
-      expect(ServiceLocator.I.getAll<Marble>().length, 1);
-      expect(ServiceLocator.I.getAll<Granite>().length, 1);
-      expect(ServiceLocator.I.getAll<Stone>().length, 2);
-      expect(ServiceLocator.I.getAll<Thing>().length, 2);
+      expect(ServiceLocator.I.resolveAll<Marble>().length, 1);
+      expect(ServiceLocator.I.resolveAll<Granite>().length, 1);
+      expect(ServiceLocator.I.resolveAll<Stone>().length, 2);
+      expect(ServiceLocator.I.resolveAll<Thing>().length, 2);
     });
 
     test('Register named Singletons', () {
@@ -124,14 +124,14 @@ void main() {
         environment: null,
       );
 
-      final marbleList = ServiceLocator.I.getAll<Marble>(name: 'marble');
-      final graniteList = ServiceLocator.I.getAll<Granite>(name: 'granite');
+      final marbleList = ServiceLocator.I.resolveAll<Marble>(name: 'marble');
+      final graniteList = ServiceLocator.I.resolveAll<Granite>(name: 'granite');
 
       expect(marbleList.length, 1);
       expect(graniteList.length, 1);
     });
 
-    test('Register named Singletons with same name - Expect one instance', () {
+    test('Register named Singletons with same name - Expect two instances', () {
       final marble1 = Marble();
       final marble2 = Marble();
 
@@ -151,11 +151,13 @@ void main() {
         environment: null,
       );
 
-      expect(ServiceLocator.I.getAll<Marble>(), isNotNull);
-      expect(ServiceLocator.I.getAll<Marble>().length, 1);
+      expect(ServiceLocator.I.resolveAll<Marble>(), isNotNull);
+      expect(ServiceLocator.I.resolveAll<Marble>().length, 2);
     });
 
-    test('Register named Singletons with different names - Expect multiple instances', () {
+    test(
+        'Register named Singletons with different names - Expect multiple instances',
+        () {
       final marble1 = Marble();
       final marble2 = Marble();
 
@@ -175,8 +177,8 @@ void main() {
         environment: null,
       );
 
-      expect(ServiceLocator.I.getAll<Marble>(), isNotNull);
-      expect(ServiceLocator.I.getAll<Marble>().length, isNot(1));
+      expect(ServiceLocator.I.resolveAll<Marble>(), isNotNull);
+      expect(ServiceLocator.I.resolveAll<Marble>().length, isNot(1));
     });
   });
 }
