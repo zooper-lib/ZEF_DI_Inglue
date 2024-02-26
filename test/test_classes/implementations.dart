@@ -126,3 +126,16 @@ class InvalidThing implements Thing {
   @override
   void doSomethingElse() => throw UnimplementedError();
 }
+
+class ServiceWithParameters {
+  /// This service should be injected
+  final WalkService _injectedService;
+
+  /// This parameter should be passed
+  final String passedParam;
+
+  ServiceWithParameters(this._injectedService, {required this.passedParam});
+
+  void doSomething() => _injectedService.walk();
+  void doSomethingElse() => print(passedParam);
+}

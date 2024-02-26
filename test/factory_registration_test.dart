@@ -52,10 +52,10 @@ void main() {
     });
 
     test('Register a factory', () {
-      ServiceLocator.I.registerFactory(
-        (serviceLocator) => Eagle(
-          serviceLocator.getFirst<FlightService>()!,
-          serviceLocator.getFirst<EatingService>()!,
+      ServiceLocator.I.registerFactory<Eagle>(
+        (serviceLocator, namedArgs) => Eagle(
+          serviceLocator.resolve<FlightService>(),
+          serviceLocator.resolve<EatingService>(),
         ),
         interfaces: [Bird, Animal, Thing],
         name: null,
@@ -63,15 +63,16 @@ void main() {
         environment: null,
       );
 
-      final eagleList = ServiceLocator.I.getAll<Eagle>();
+      final eagleList = ServiceLocator.I.resolveAll<Eagle>();
 
       expect(eagleList, isNotNull);
       expect(eagleList.length, 1);
     });
 
-    test('Register a factory with not injected dependencies - Expect Warning', () {
+    test('Register a factory with not injected dependencies - Expect Warning',
+        () {
       ServiceLocator.I.registerFactory<InvalidThing>(
-        (serviceLocator) => serviceLocator.getFirst()!,
+        (serviceLocator, namedArgs) => serviceLocator.resolve(),
         interfaces: [Thing],
         name: null,
         key: null,

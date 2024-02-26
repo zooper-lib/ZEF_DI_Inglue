@@ -17,18 +17,22 @@ abstract class Registration<T extends Object> {
   /// The environment in which the registration is valid, used for environment-specific registrations.
   final String? environment;
 
+  /// The date and time the registration was registered.
+  /// This is used for getting the first or last registration.
+  final DateTime registeredOn;
+
   /// Creates a new registration with the given details.
   Registration({
     required this.interfaces,
     required this.name,
     required this.key,
     required this.environment,
-  });
+  }) : registeredOn = DateTime.now().toUtc();
 
   /// Resolves and returns the service instance associated with this registration.
   ///
   /// The [serviceLocator] parameter is used to resolve any dependencies the service might have.
-  T resolve(ServiceLocator serviceLocator);
+  //T resolve(ServiceLocator serviceLocator);
 
   /// Creates a singleton registration with the specified details.
   ///
@@ -53,7 +57,10 @@ abstract class Registration<T extends Object> {
   ///
   /// A factory registration uses the provided factory function to create a new instance of the service each time it is resolved.
   factory Registration.factory({
-    required T Function(ServiceLocator serviceLocator) factory,
+    required T Function(
+      ServiceLocator serviceLocator,
+      Map<String, dynamic> namedArgs,
+    ) factory,
     required List<Type>? interfaces,
     required String? name,
     required dynamic key,
@@ -72,7 +79,7 @@ abstract class Registration<T extends Object> {
   ///
   /// If the [registration] parameter is a singleton (first value of the doublet), a singleton registration is created.
   /// If it is a factory (second value of the doublet), a factory registration is created.
-  factory Registration.auto({
+  /* factory Registration.auto({
     required Doublet<T, T Function(ServiceLocator)> registration,
     required List<Type>? interfaces,
     required String? name,
@@ -96,14 +103,20 @@ abstract class Registration<T extends Object> {
         environment: environment,
       );
     }
-  }
+  } */
 
   /// Creates a new registration based on an existing one, but with a new value (either instance or factory function) provided by [newValue].
   ///
   /// Throws a [StateError] if the type of registration is unknown.
   factory Registration.from(
     Registration registration,
-    Doublet<T, T Function(ServiceLocator serviceLocator)> newValue,
+    Doublet<
+            T,
+            T Function(
+              ServiceLocator serviceLocator,
+              Map<String, dynamic> namedArgs,
+            )>
+        newValue,
   ) {
     if (registration is SingletonRegistration) {
       return SingletonRegistration.from(registration, newValue.first);
@@ -132,7 +145,8 @@ class SingletonRegistration<T extends Object> extends Registration<T> {
   }) : _instance = instance;
 
   /// Creates a new [SingletonRegistration] from an existing registration, replacing the instance with [newInstance].
-  factory SingletonRegistration.from(SingletonRegistration registration, T newInstance) {
+  factory SingletonRegistration.from(
+      SingletonRegistration registration, T newInstance) {
     return SingletonRegistration(
       instance: newInstance,
       interfaces: registration.interfaces,
@@ -143,7 +157,6 @@ class SingletonRegistration<T extends Object> extends Registration<T> {
   }
 
   /// Returns the singleton instance of the service.
-  @override
   T resolve(ServiceLocator serviceLocator) => _instance;
 }
 
@@ -152,26 +165,32 @@ class SingletonRegistration<T extends Object> extends Registration<T> {
 /// This registration type allows for a new instance of the service to be created each time it is resolved.
 class FactoryRegistration<T extends Object> extends Registration<T> {
   /// The factory function used to create new instances of the service.
-  final T Function(ServiceLocator serviceLocator) _factory;
+  final T Function(
+    ServiceLocator serviceLocator,
+    Map<String, dynamic> namedArgs,
+  ) _factory;
 
   /// Creates a factory registration with the specified factory function and details.
   FactoryRegistration({
-    required T Function(ServiceLocator) factory,
+    required T Function(ServiceLocator, Map<String, dynamic> namedArgs) factory,
     required super.interfaces,
     required super.name,
     required super.key,
     required super.environment,
   }) : _factory = factory;
 
-  /// Resolves and returns a new instance of the service by invoking the factory function.
-  @override
-  T resolve(ServiceLocator serviceLocator) {
-    return _factory(serviceLocator);
+  T resolve(ServiceLocator serviceLocator, Map<String, dynamic> namedArgs) {
+    // Invoke the factory function with both the service locator and optional named parameters
+    return _factory(serviceLocator, namedArgs);
   }
 
   /// Creates a new [FactoryRegistration] from an existing registration, replacing the factory function with [newFactory].
   factory FactoryRegistration.from(
-      FactoryRegistration registration, T Function(ServiceLocator serviceLocator) newFactory) {
+      FactoryRegistration registration,
+      T Function(
+        ServiceLocator serviceLocator,
+        Map<String, dynamic> namedArgs,
+      ) newFactory) {
     return FactoryRegistration(
       factory: newFactory,
       interfaces: registration.interfaces,
