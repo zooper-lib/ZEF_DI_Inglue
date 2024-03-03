@@ -18,7 +18,7 @@ environment:
 dependencies:
   any_of: ^2.0.0
 
-  zef_di_abstractions: ^1.0.0
+  zef_di_abstractions: ^1.1.1
 
 dev_dependencies:
   lints: ^3.0.0
