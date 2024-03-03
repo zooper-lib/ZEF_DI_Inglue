@@ -1,6 +1,6 @@
 import 'package:any_of/any_of.dart';
 import 'package:zef_di_abstractions/zef_di_abstractions.dart';
-import 'package:zef_di_inglue/src/registration.dart';
+import 'package:zef_di_inglue/src/registrations.dart';
 
 class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
   final Map<Type, List<Registration>> _registrations = {};
