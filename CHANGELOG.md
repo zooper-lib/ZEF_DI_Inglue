@@ -1,3 +1,7 @@
+## 1.0.1
+
+- Removed file from exporting
+
 ## 1.0.0
 
 - Possibility to pass arguments to factory resolutions

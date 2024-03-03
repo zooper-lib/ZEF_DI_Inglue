@@ -1,6 +1,6 @@
 name: zef_di_inglue
 description: An adapter for the ZEF_DI_Abstractions package.
-version: 1.0.0
+version: 1.0.1
 homepage: https://www.zooper.dev
 repository: https://github.com/zooper-lib/ZEF_DI_Inglue
 topics:
