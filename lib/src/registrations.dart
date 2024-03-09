@@ -1,5 +1,6 @@
 import 'package:any_of/any_of.dart';
 import 'package:zef_di_abstractions/zef_di_abstractions.dart';
+import 'package:zef_helpers_lazy/zef_helpers_lazy.dart';
 
 /// A base class for managing service registrations within a dependency injection framework.
 /// This class allows for the registration of services either as singletons or factories,
@@ -74,36 +75,6 @@ abstract class Registration<T extends Object> {
       environment: environment,
     );
   }
-
-  /// Creates a registration dynamically based on the provided [registration] parameter.
-  ///
-  /// If the [registration] parameter is a singleton (first value of the doublet), a singleton registration is created.
-  /// If it is a factory (second value of the doublet), a factory registration is created.
-  /* factory Registration.auto({
-    required Doublet<T, T Function(ServiceLocator)> registration,
-    required List<Type>? interfaces,
-    required String? name,
-    required dynamic key,
-    required String? environment,
-  }) {
-    if (registration.isFirst) {
-      return Registration.singleton(
-        instance: registration.first,
-        interfaces: interfaces,
-        name: name,
-        key: key,
-        environment: environment,
-      );
-    } else {
-      return Registration.factory(
-        factory: registration.second,
-        interfaces: interfaces,
-        name: name,
-        key: key,
-        environment: environment,
-      );
-    }
-  } */
 
   /// Creates a new registration based on an existing one, but with a new value (either instance or factory function) provided by [newValue].
   ///
@@ -198,5 +169,21 @@ class FactoryRegistration<T extends Object> extends Registration<T> {
       key: registration.key,
       environment: registration.environment,
     );
+  }
+}
+
+class LazyRegistration<T extends Object> extends Registration<T> {
+  final Lazy<T> lazyInstance;
+
+  LazyRegistration({
+    required this.lazyInstance,
+    required super.interfaces,
+    required super.name,
+    required super.key,
+    required super.environment,
+  }) : super();
+
+  T resolve(ServiceLocator serviceLocator) {
+    return lazyInstance.value;
   }
 }
