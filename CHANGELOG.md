@@ -1,3 +1,7 @@
+## 1.1.0
+
+- Adapted lazy registration
+
 ## 1.0.1
 
 - Removed file from exporting
