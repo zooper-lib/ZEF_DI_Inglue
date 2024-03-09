@@ -1,6 +1,7 @@
 import 'package:any_of/any_of.dart';
 import 'package:zef_di_abstractions/zef_di_abstractions.dart';
 import 'package:zef_di_inglue/src/registrations.dart';
+import 'package:zef_helpers_lazy/zef_helpers_lazy.dart';
 
 class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
   final Map<Type, List<Registration>> _registrations = {};
@@ -82,6 +83,44 @@ class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
   }
 
   @override
+  Triplet<Success, Conflict, InternalError> registerLazy<T extends Object>(
+    Lazy<T> lazyInstance, {
+    required List<Type>? interfaces,
+    required String? name,
+    required dynamic key,
+    required String? environment,
+    required bool allowMultipleInstances,
+  }) {
+    // Check if there is already a registration
+    if (allowMultipleInstances == false &&
+        _isInstanceRegistered(
+          T,
+          name: name,
+          key: key,
+          environment: environment,
+        )) {
+      return Triplet.second(
+        Conflict(
+            'Registration already exists for type $T. Skipping registration.'),
+      );
+    }
+
+    var registration = LazyRegistration<T>(
+      lazyInstance: lazyInstance,
+      interfaces: interfaces,
+      name: name,
+      key: key,
+      environment: environment,
+    );
+
+    // Register the lazy instance
+    _registrations[T] ??= [];
+    _registrations[T]!.add(registration);
+
+    return Triplet.first(Success());
+  }
+
+  @override
   Triplet<T, NotFound, InternalError> resolve<T extends Object>({
     required String? name,
     required key,
@@ -104,12 +143,8 @@ class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
     // Get the first registration
     final registration = matchedRegistrations.first;
 
-    // Create the instance
-    final instance = registration is FactoryRegistration<T>
-        ? registration.resolve(ServiceLocator.I, namedArgs)
-        : registration is SingletonRegistration<T>
-            ? registration.resolve(ServiceLocator.I)
-            : throw Exception("No registration found for type $T");
+    // Create the instance based on the type of registration
+    final instance = _resolveRegistration<T>(registration, namedArgs);
 
     return Triplet.first(instance);
   }
@@ -271,22 +306,25 @@ class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
     return allRegistrations.isNotEmpty;
   }
 
-  List<Registration> _filterRegistrations<T extends Object>({
+  List<Registration<T>> _filterRegistrations<T extends Object>({
     required String? name,
     required key,
     required String? environment,
   }) {
     // Filter by the types
-    var matchedRegistrations = _registrations.entries.expand((entry) {
-      // Check if the registration key (the concrete class) is T
-      bool isConcreteMatch = entry.key == T;
+    List<Registration<T>> matchedRegistrations = _registrations.entries
+        .expand((entry) {
+          // Check if the registration key (the concrete class) is T
+          bool isConcreteMatch = entry.key == T;
 
-      // Filter registrations where T is an interface or the concrete class itself
-      return entry.value.where((registration) {
-        return isConcreteMatch ||
-            (registration.interfaces?.contains(T) ?? false);
-      });
-    }).toList();
+          // Filter registrations where T is an interface or the concrete class itself
+          return entry.value.where((registration) {
+            return isConcreteMatch ||
+                (registration.interfaces?.contains(T) ?? false);
+          });
+        })
+        .cast<Registration<T>>()
+        .toList();
 
     // Filter by the name
     if (name != null) {
@@ -313,5 +351,18 @@ class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
     );
 
     return matchedRegistrations;
+  }
+
+  T _resolveRegistration<T extends Object>(
+      Registration<T> registration, Map<String, dynamic> namedArgs) {
+    if (registration is FactoryRegistration<T>) {
+      return registration.resolve(ServiceLocator.I, namedArgs);
+    } else if (registration is SingletonRegistration<T>) {
+      return registration.resolve(ServiceLocator.I);
+    } else if (registration is LazyRegistration<T>) {
+      return registration.resolve(ServiceLocator.I);
+    } else {
+      throw Exception("Unsupported registration type for type $T.");
+    }
   }
 }
