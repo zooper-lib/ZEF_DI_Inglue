@@ -11,13 +11,13 @@ void main() {
   // Register an instance
   ServiceLocator.I.registerInstance(
     Dolphin(),
-    interfaces: [Animal, Fish],
+    interfaces: {Animal, Fish},
   );
 
   // Register another instance
   ServiceLocator.I.registerInstance(
     Dolphin(),
-    interfaces: [Animal, Fish],
+    interfaces: {Animal, Fish},
   );
 
   // Register a factory

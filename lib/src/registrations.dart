@@ -6,8 +6,8 @@ import 'package:zef_helpers_lazy/zef_helpers_lazy.dart';
 /// This class allows for the registration of services either as singletons or factories,
 /// optionally associated with interfaces, a name, a key, or an environment.
 abstract class Registration<T extends Object> {
-  /// The list of interfaces that the registered service implements.
-  final List<Type>? interfaces;
+  /// The Set of interfaces that the registered service implements.
+  final Set<Type>? interfaces;
 
   /// An optional name for the registration, used for named registrations.
   final String? name;
@@ -40,7 +40,7 @@ abstract class Registration<T extends Object> {
   /// A singleton registration ensures that only one instance of the service is created and returned for all resolutions.
   factory Registration.singleton({
     required T instance,
-    required List<Type>? interfaces,
+    required Set<Type>? interfaces,
     required String? name,
     required dynamic key,
     required String? environment,
@@ -62,7 +62,7 @@ abstract class Registration<T extends Object> {
       ServiceLocator serviceLocator,
       Map<String, dynamic> namedArgs,
     ) factory,
-    required List<Type>? interfaces,
+    required Set<Type>? interfaces,
     required String? name,
     required dynamic key,
     required String? environment,

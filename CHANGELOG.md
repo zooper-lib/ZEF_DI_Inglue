@@ -1,3 +1,7 @@
+## 1.1.1
+
+- Adapted changes from `List` to `Set`
+
 ## 1.1.0
 
 - Adapted lazy registration
