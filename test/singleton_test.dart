@@ -22,7 +22,7 @@ void main() {
 
   group('Singleton Registration |', () {
     test(
-        'Register Singleton | No Previous Registration | Should Return Empty List',
+        'Register Singleton | No Previous Registration | Should Return Empty Set',
         () {
       // Act
       final result = ServiceLocator.I.resolveAll();
@@ -50,7 +50,7 @@ void main() {
       final instance = Marble();
 
       // Act
-      ServiceLocator.I.registerInstance(instance, interfaces: [Stone, Thing]);
+      ServiceLocator.I.registerInstance(instance, interfaces: {Stone, Thing});
       final marbleInstances = ServiceLocator.I.resolveAll<Marble>();
       final stoneInstances = ServiceLocator.I.resolveAll<Stone>();
       final thingInstances = ServiceLocator.I.resolveAll<Thing>();
@@ -69,8 +69,8 @@ void main() {
       final instance2 = Marble();
 
       // Act
-      ServiceLocator.I.registerInstance(instance1, interfaces: [Stone, Thing]);
-      ServiceLocator.I.registerInstance(instance2, interfaces: [Stone, Thing]);
+      ServiceLocator.I.registerInstance(instance1, interfaces: {Stone, Thing});
+      ServiceLocator.I.registerInstance(instance2, interfaces: {Stone, Thing});
       final instances = ServiceLocator.I.resolveAll<Marble>();
 
       // Assert
@@ -85,8 +85,8 @@ void main() {
       final granite = Granite();
 
       // Act
-      ServiceLocator.I.registerInstance(marble, interfaces: [Stone, Thing]);
-      ServiceLocator.I.registerInstance(granite, interfaces: [Stone, Thing]);
+      ServiceLocator.I.registerInstance(marble, interfaces: {Stone, Thing});
+      ServiceLocator.I.registerInstance(granite, interfaces: {Stone, Thing});
       final stoneInstances = ServiceLocator.I.resolveAll<Stone>();
       final thingInstances = ServiceLocator.I.resolveAll<Thing>();
 
@@ -121,9 +121,9 @@ void main() {
 
       // Act
       ServiceLocator.I.registerInstance(marble1,
-          interfaces: [Stone, Thing], name: 'marble');
+          interfaces: {Stone, Thing}, name: 'marble');
       ServiceLocator.I.registerInstance(marble2,
-          interfaces: [Stone, Thing], name: 'marble');
+          interfaces: {Stone, Thing}, name: 'marble');
       final instances = ServiceLocator.I.resolveAll<Marble>(name: 'marble');
 
       // Assert
@@ -140,9 +140,9 @@ void main() {
 
       // Act
       ServiceLocator.I.registerInstance(marble1,
-          interfaces: [Stone, Thing], name: 'marble1');
+          interfaces: {Stone, Thing}, name: 'marble1');
       ServiceLocator.I.registerInstance(marble2,
-          interfaces: [Stone, Thing], name: 'marble2');
+          interfaces: {Stone, Thing}, name: 'marble2');
       final instancesMarble1 =
           ServiceLocator.I.resolveAll<Marble>(name: 'marble1');
       final instancesMarble2 =
@@ -194,25 +194,25 @@ void main() {
       final eatingService = EatingService();
 
       ServiceLocator.I.registerInstance(Chicken(walkService, eatingService),
-          interfaces: [Bird, Animal]);
+          interfaces: {Bird, Animal});
       ServiceLocator.I.registerInstance(Dolphin(SwimService(), eatingService),
-          interfaces: [Animal, Fish]);
+          interfaces: {Animal, Fish});
       ServiceLocator.I.registerInstance(Eagle(FlightService(), eatingService),
-          interfaces: [Bird, Animal]);
+          interfaces: {Bird, Animal});
       ServiceLocator.I.registerInstance(Shark(SwimService(), eatingService),
-          interfaces: [Animal, Fish]);
+          interfaces: {Animal, Fish});
       ServiceLocator.I.registerInstance(Whale(SwimService(), eatingService),
-          interfaces: [Animal, Fish]);
+          interfaces: {Animal, Fish});
 
       // Act
       final animalInstances = ServiceLocator.I.resolveAll<Animal>();
       final fishInstances = ServiceLocator.I.resolveAll<Fish>();
 
       // Assert
-      expect(animalInstances, isA<List<Animal>>());
+      expect(animalInstances, isA<Set<Animal>>());
       expect(animalInstances.length,
           5); // Update the count based on the actual number of Animal registrations
-      expect(fishInstances, isA<List<Fish>>());
+      expect(fishInstances, isA<Set<Fish>>());
       expect(fishInstances.length,
           3); // Update the count based on the actual number of Fish registrations
     });

@@ -4,12 +4,12 @@ import 'package:zef_di_inglue/src/registrations.dart';
 import 'package:zef_helpers_lazy/zef_helpers_lazy.dart';
 
 class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
-  final Map<Type, List<Registration>> _registrations = {};
+  final Map<Type, Set<Registration>> _registrations = {};
 
   @override
   Triplet<Success, Conflict, InternalError> registerInstance<T extends Object>(
     T instance, {
-    required List<Type>? interfaces,
+    required Set<Type>? interfaces,
     required String? name,
     required dynamic key,
     required String? environment,
@@ -39,7 +39,7 @@ class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
     );
 
     // Register the instance
-    _registrations[T] ??= [];
+    _registrations[T] ??= {};
     _registrations[T]!.add(registration);
 
     return Triplet.first(Success());
@@ -51,7 +51,7 @@ class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
       ServiceLocator serviceLocator,
       Map<String, dynamic> namedArgs,
     ) factory, {
-    required List<Type>? interfaces,
+    required Set<Type>? interfaces,
     required String? name,
     required dynamic key,
     required String? environment,
@@ -76,7 +76,7 @@ class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
     );
 
     // Register the instance
-    _registrations[T] ??= [];
+    _registrations[T] ??= {};
     _registrations[T]!.add(registration);
 
     return Triplet.first(Success());
@@ -85,7 +85,7 @@ class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
   @override
   Triplet<Success, Conflict, InternalError> registerLazy<T extends Object>(
     Lazy<T> lazyInstance, {
-    required List<Type>? interfaces,
+    required Set<Type>? interfaces,
     required String? name,
     required dynamic key,
     required String? environment,
@@ -101,7 +101,7 @@ class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
         )) {
       return Triplet.second(
         Conflict(
-            'Registration already exists for type $T. Skipping registration.'),
+            '$Registration already exists for type $T. Skipping registration.'),
       );
     }
 
@@ -114,7 +114,7 @@ class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
     );
 
     // Register the lazy instance
-    _registrations[T] ??= [];
+    _registrations[T] ??= {};
     _registrations[T]!.add(registration);
 
     return Triplet.first(Success());
@@ -150,7 +150,7 @@ class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
   }
 
   @override
-  Triplet<List<T>, NotFound, InternalError> resolveAll<T extends Object>({
+  Triplet<Set<T>, NotFound, InternalError> resolveAll<T extends Object>({
     required String? name,
     required key,
     required String? environment,
@@ -179,7 +179,7 @@ class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
       } else {
         throw Exception("Unsupported registration type for $T");
       }
-    }).toList();
+    }).toSet();
 
     return Triplet.first(resolvedInstances);
   }
@@ -277,7 +277,7 @@ class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
     required key,
     required String? environment,
   }) {
-    var allRegistrations = _registrations[type] ?? [];
+    var allRegistrations = _registrations[type] ?? {};
 
     // Check if there are any registrations
     if (allRegistrations.isEmpty) {
@@ -288,19 +288,19 @@ class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
     if (name != null) {
       allRegistrations = allRegistrations.where((registration) {
         return registration.name == name;
-      }).toList();
+      }).toSet();
     }
 
     // Filter by the key
     allRegistrations = allRegistrations.where((registration) {
       return registration.key == key;
-    }).toList();
+    }).toSet();
 
     // Filter by the environment
     if (environment != null) {
       allRegistrations = allRegistrations.where((registration) {
         return registration.environment == environment;
-      }).toList();
+      }).toSet();
     }
 
     return allRegistrations.isNotEmpty;

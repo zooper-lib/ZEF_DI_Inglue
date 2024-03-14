@@ -19,7 +19,7 @@ void main() {
     test('Register Factory | Eagle | Should Resolve Eagle Instance', () {
       // Arrange
       ServiceLocator.I.registerInstance<FlightService>(FlightService(),
-          interfaces: [MovementService]);
+          interfaces: {MovementService});
       ServiceLocator.I.registerInstance<EatingService>(EatingService());
 
       // Act
@@ -28,7 +28,7 @@ void main() {
           serviceLocator.resolve<FlightService>(),
           serviceLocator.resolve<EatingService>(),
         ),
-        interfaces: [Bird, Animal, Thing],
+        interfaces: {Bird, Animal, Thing},
       );
 
       final eagleInstances = ServiceLocator.I.resolveAll<Eagle>();
@@ -44,7 +44,7 @@ void main() {
         (serviceLocator, namedArgs) {
           throw Exception('Dependency Injection failed for InvalidThing.');
         },
-        interfaces: [Thing],
+        interfaces: {Thing},
       );
 
       // Act & Assert
@@ -59,7 +59,7 @@ void main() {
     test('Resolve Factory | MovementService | Should Resolve WalkService', () {
       // Arrange
       ServiceLocator.I.registerInstance<WalkService>(WalkService(),
-          interfaces: [MovementService]);
+          interfaces: {MovementService});
 
       // Act
       final walkService = ServiceLocator.I.resolve<MovementService>();
@@ -73,7 +73,7 @@ void main() {
         () {
       // Arrange
       ServiceLocator.I.registerInstance<WalkService>(WalkService(),
-          interfaces: [MovementService]);
+          interfaces: {MovementService});
       ServiceLocator.I.registerFactory<ServiceWithParameters>(
         (locator, namedArgs) => ServiceWithParameters(
           locator.resolve<WalkService>(),
@@ -97,7 +97,7 @@ void main() {
         () {
       // Arrange
       ServiceLocator.I.registerInstance<WalkService>(WalkService(),
-          interfaces: [MovementService]);
+          interfaces: {MovementService});
       ServiceLocator.I.registerFactory<ServiceWithParameters>(
         (locator, namedArgs) => ServiceWithParameters(
           locator.resolve<WalkService>(),
@@ -119,7 +119,7 @@ void main() {
         () {
       // Arrange
       ServiceLocator.I.registerInstance<WalkService>(WalkService(),
-          interfaces: [MovementService]);
+          interfaces: {MovementService});
       ServiceLocator.I.registerFactory<ServiceWithParameters>(
         (locator, namedArgs) => ServiceWithParameters(
           locator.resolve<WalkService>(),
