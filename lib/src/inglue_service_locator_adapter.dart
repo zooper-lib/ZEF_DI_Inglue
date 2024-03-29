@@ -7,7 +7,7 @@ class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
   final Map<Type, Set<Registration>> _registrations = {};
 
   @override
-  Triplet<Success, Conflict, InternalError> registerInstance<T extends Object>(
+  Triplet<Success, Conflict, InternalError> registerSingleton<T extends Object>(
     T instance, {
     required Set<Type>? interfaces,
     required String? name,
@@ -46,7 +46,7 @@ class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
   }
 
   @override
-  Triplet<Success, Conflict, InternalError> registerFactory<T extends Object>(
+  Triplet<Success, Conflict, InternalError> registerTransient<T extends Object>(
     T Function(
       ServiceLocator serviceLocator,
       Map<String, dynamic> namedArgs,
@@ -185,7 +185,7 @@ class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
   }
 
   @override
-  Doublet<Success, InternalError> overrideInstance<T extends Object>(
+  Doublet<Success, InternalError> overrideWithSingleton<T extends Object>(
     T instance, {
     required String? name,
     required key,
@@ -202,21 +202,24 @@ class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
       return Doublet.second(InternalError('No registration found for type $T'));
     }
 
-    // Construct the new registration
-    var newRegistration =
-        Registration<T>.from(registration, Doublet.first(instance));
-
     // Remove the old registration
     _registrations[T]?.remove(registration);
 
-    // Add the new registration
-    _registrations[T]?.add(newRegistration);
+    // Register the new Singleton
+    registerSingleton(
+      instance,
+      interfaces: null,
+      name: name,
+      key: key,
+      environment: environment,
+      allowMultipleInstances: true,
+    );
 
     return Doublet.first(Success());
   }
 
   @override
-  Doublet<Success, InternalError> overrideFactory<T extends Object>(
+  Doublet<Success, InternalError> overrideWithTransient<T extends Object>(
     T Function(
       ServiceLocator serviceLocator,
       Map<String, dynamic> namedArgs,
@@ -236,15 +239,52 @@ class InglueServiceLocatorAdapter implements ServiceLocatorAdapter {
       return Doublet.second(InternalError('No registration found for type $T'));
     }
 
-    // Construct the new registration
-    var newRegistration =
-        Registration<T>.from(registration, Doublet.second(factory));
+    // Remove the old registration
+    _registrations[T]?.remove(registration);
+
+    // Add the new registration
+    registerTransient(
+      factory,
+      interfaces: null,
+      name: name,
+      key: key,
+      environment: environment,
+      allowMultipleInstances: true,
+    );
+
+    return Doublet.first(Success());
+  }
+
+  @override
+  Doublet<Success, InternalError> overrideWithLazy<T extends Object>(
+    Lazy<T> lazyInstance, {
+    required String? name,
+    required key,
+    required String? environment,
+  }) {
+    var registration = _registrations.entries
+        .where((element) => element.key == T)
+        .firstOrNull
+        ?.value
+        .firstOrNull;
+
+    // If there is no registration, return an error
+    if (registration == null) {
+      return Doublet.second(InternalError('No registration found for type $T'));
+    }
 
     // Remove the old registration
     _registrations[T]?.remove(registration);
 
     // Add the new registration
-    _registrations[T]?.add(newRegistration);
+    registerLazy(
+      lazyInstance,
+      interfaces: null,
+      name: name,
+      key: key,
+      environment: environment,
+      allowMultipleInstances: true,
+    );
 
     return Doublet.first(Success());
   }

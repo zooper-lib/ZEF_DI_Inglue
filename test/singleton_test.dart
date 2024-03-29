@@ -37,7 +37,7 @@ void main() {
       final instance = Marble();
 
       // Act
-      ServiceLocator.I.registerInstance(instance);
+      ServiceLocator.I.registerSingleton(instance);
       final instances = ServiceLocator.I.resolveAll<Marble>();
 
       // Assert
@@ -50,7 +50,7 @@ void main() {
       final instance = Marble();
 
       // Act
-      ServiceLocator.I.registerInstance(instance, interfaces: {Stone, Thing});
+      ServiceLocator.I.registerSingleton(instance, interfaces: {Stone, Thing});
       final marbleInstances = ServiceLocator.I.resolveAll<Marble>();
       final stoneInstances = ServiceLocator.I.resolveAll<Stone>();
       final thingInstances = ServiceLocator.I.resolveAll<Thing>();
@@ -69,8 +69,8 @@ void main() {
       final instance2 = Marble();
 
       // Act
-      ServiceLocator.I.registerInstance(instance1, interfaces: {Stone, Thing});
-      ServiceLocator.I.registerInstance(instance2, interfaces: {Stone, Thing});
+      ServiceLocator.I.registerSingleton(instance1, interfaces: {Stone, Thing});
+      ServiceLocator.I.registerSingleton(instance2, interfaces: {Stone, Thing});
       final instances = ServiceLocator.I.resolveAll<Marble>();
 
       // Assert
@@ -85,8 +85,8 @@ void main() {
       final granite = Granite();
 
       // Act
-      ServiceLocator.I.registerInstance(marble, interfaces: {Stone, Thing});
-      ServiceLocator.I.registerInstance(granite, interfaces: {Stone, Thing});
+      ServiceLocator.I.registerSingleton(marble, interfaces: {Stone, Thing});
+      ServiceLocator.I.registerSingleton(granite, interfaces: {Stone, Thing});
       final stoneInstances = ServiceLocator.I.resolveAll<Stone>();
       final thingInstances = ServiceLocator.I.resolveAll<Thing>();
 
@@ -101,8 +101,8 @@ void main() {
       final granite = Granite();
 
       // Act
-      ServiceLocator.I.registerInstance(marble, name: 'marble');
-      ServiceLocator.I.registerInstance(granite, name: 'granite');
+      ServiceLocator.I.registerSingleton(marble, name: 'marble');
+      ServiceLocator.I.registerSingleton(granite, name: 'granite');
       final marbleInstance = ServiceLocator.I.resolve<Marble>(name: 'marble');
       final graniteInstance =
           ServiceLocator.I.resolve<Granite>(name: 'granite');
@@ -120,9 +120,9 @@ void main() {
       final marble2 = Marble();
 
       // Act
-      ServiceLocator.I.registerInstance(marble1,
+      ServiceLocator.I.registerSingleton(marble1,
           interfaces: {Stone, Thing}, name: 'marble');
-      ServiceLocator.I.registerInstance(marble2,
+      ServiceLocator.I.registerSingleton(marble2,
           interfaces: {Stone, Thing}, name: 'marble');
       final instances = ServiceLocator.I.resolveAll<Marble>(name: 'marble');
 
@@ -139,9 +139,9 @@ void main() {
       final marble2 = Marble();
 
       // Act
-      ServiceLocator.I.registerInstance(marble1,
+      ServiceLocator.I.registerSingleton(marble1,
           interfaces: {Stone, Thing}, name: 'marble1');
-      ServiceLocator.I.registerInstance(marble2,
+      ServiceLocator.I.registerSingleton(marble2,
           interfaces: {Stone, Thing}, name: 'marble2');
       final instancesMarble1 =
           ServiceLocator.I.resolveAll<Marble>(name: 'marble1');
@@ -177,7 +177,7 @@ void main() {
       // Arrange
       final walkService = WalkService();
       final eatingService = EatingService();
-      ServiceLocator.I.registerInstance(Chicken(walkService, eatingService));
+      ServiceLocator.I.registerSingleton(Chicken(walkService, eatingService));
 
       // Act
       final instance = ServiceLocator.I.resolve<Chicken>();
@@ -193,15 +193,15 @@ void main() {
       final walkService = WalkService();
       final eatingService = EatingService();
 
-      ServiceLocator.I.registerInstance(Chicken(walkService, eatingService),
+      ServiceLocator.I.registerSingleton(Chicken(walkService, eatingService),
           interfaces: {Bird, Animal});
-      ServiceLocator.I.registerInstance(Dolphin(SwimService(), eatingService),
+      ServiceLocator.I.registerSingleton(Dolphin(SwimService(), eatingService),
           interfaces: {Animal, Fish});
-      ServiceLocator.I.registerInstance(Eagle(FlightService(), eatingService),
+      ServiceLocator.I.registerSingleton(Eagle(FlightService(), eatingService),
           interfaces: {Bird, Animal});
-      ServiceLocator.I.registerInstance(Shark(SwimService(), eatingService),
+      ServiceLocator.I.registerSingleton(Shark(SwimService(), eatingService),
           interfaces: {Animal, Fish});
-      ServiceLocator.I.registerInstance(Whale(SwimService(), eatingService),
+      ServiceLocator.I.registerSingleton(Whale(SwimService(), eatingService),
           interfaces: {Animal, Fish});
 
       // Act

@@ -15,15 +15,15 @@ void main() {
     ServiceLocator.I.unregisterAll();
   });
 
-  group('Factory Registration |', () {
-    test('Register Factory | Eagle | Should Resolve Eagle Instance', () {
+  group('Transient Registration |', () {
+    test('Register Transient | Eagle | Should Resolve Eagle Instance', () {
       // Arrange
-      ServiceLocator.I.registerInstance<FlightService>(FlightService(),
+      ServiceLocator.I.registerSingleton<FlightService>(FlightService(),
           interfaces: {MovementService});
-      ServiceLocator.I.registerInstance<EatingService>(EatingService());
+      ServiceLocator.I.registerSingleton<EatingService>(EatingService());
 
       // Act
-      ServiceLocator.I.registerFactory<Eagle>(
+      ServiceLocator.I.registerTransient<Eagle>(
         (serviceLocator, namedArgs) => Eagle(
           serviceLocator.resolve<FlightService>(),
           serviceLocator.resolve<EatingService>(),
@@ -38,9 +38,9 @@ void main() {
       expect(eagleInstances.length, 1);
     });
 
-    test('Register Factory | InvalidThing | Should Warn About Injection', () {
+    test('Register Transient | InvalidThing | Should Warn About Injection', () {
       // Arrange
-      ServiceLocator.I.registerFactory<InvalidThing>(
+      ServiceLocator.I.registerTransient<InvalidThing>(
         (serviceLocator, namedArgs) {
           throw Exception('Dependency Injection failed for InvalidThing.');
         },
@@ -55,10 +55,11 @@ void main() {
     });
   });
 
-  group('Factory Resolution |', () {
-    test('Resolve Factory | MovementService | Should Resolve WalkService', () {
+  group('Transient Resolution |', () {
+    test('Resolve Transient | MovementService | Should Resolve WalkService',
+        () {
       // Arrange
-      ServiceLocator.I.registerInstance<WalkService>(WalkService(),
+      ServiceLocator.I.registerSingleton<WalkService>(WalkService(),
           interfaces: {MovementService});
 
       // Act
@@ -69,12 +70,12 @@ void main() {
     });
 
     test(
-        'Resolve Factory With Parameters | ServiceWithParameters | Should Resolve Correctly',
+        'Resolve Transient With Parameters | ServiceWithParameters | Should Resolve Correctly',
         () {
       // Arrange
-      ServiceLocator.I.registerInstance<WalkService>(WalkService(),
+      ServiceLocator.I.registerSingleton<WalkService>(WalkService(),
           interfaces: {MovementService});
-      ServiceLocator.I.registerFactory<ServiceWithParameters>(
+      ServiceLocator.I.registerTransient<ServiceWithParameters>(
         (locator, namedArgs) => ServiceWithParameters(
           locator.resolve<WalkService>(),
           passedParam: namedArgs['passedParam'] as String,
@@ -93,12 +94,12 @@ void main() {
     });
 
     test(
-        'Resolve Factory With Excess Parameters | ServiceWithParameters | Should Still Resolve',
+        'Resolve Transient With Excess Parameters | ServiceWithParameters | Should Still Resolve',
         () {
       // Arrange
-      ServiceLocator.I.registerInstance<WalkService>(WalkService(),
+      ServiceLocator.I.registerSingleton<WalkService>(WalkService(),
           interfaces: {MovementService});
-      ServiceLocator.I.registerFactory<ServiceWithParameters>(
+      ServiceLocator.I.registerTransient<ServiceWithParameters>(
         (locator, namedArgs) => ServiceWithParameters(
           locator.resolve<WalkService>(),
           passedParam: namedArgs['passedParam'] as String,
@@ -115,12 +116,12 @@ void main() {
     });
 
     test(
-        'Resolve Factory With Incorrect Parameters | ServiceWithParameters | Should Throw TypeError',
+        'Resolve Transient With Incorrect Parameters | ServiceWithParameters | Should Throw TypeError',
         () {
       // Arrange
-      ServiceLocator.I.registerInstance<WalkService>(WalkService(),
+      ServiceLocator.I.registerSingleton<WalkService>(WalkService(),
           interfaces: {MovementService});
-      ServiceLocator.I.registerFactory<ServiceWithParameters>(
+      ServiceLocator.I.registerTransient<ServiceWithParameters>(
         (locator, namedArgs) => ServiceWithParameters(
           locator.resolve<WalkService>(),
           passedParam: namedArgs['passedParam'] as String,
