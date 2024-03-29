@@ -1,3 +1,8 @@
+## 2.0.0
+
+- Adapted to renamed classes and functions
+- Added method `overrideWithLazy()`
+
 ## 1.1.1
 
 - Adapted changes from `List` to `Set`

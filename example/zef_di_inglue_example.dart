@@ -8,20 +8,20 @@ void main() {
   // Build the ServiceLocator
   ServiceLocatorBuilder().withAdapter(InglueServiceLocatorAdapter()).build();
 
-  // Register an instance
-  ServiceLocator.I.registerInstance(
+  // Register an Singleton
+  ServiceLocator.I.registerSingleton(
     Dolphin(),
     interfaces: {Animal, Fish},
   );
 
-  // Register another instance
-  ServiceLocator.I.registerInstance(
+  // Register another Singleton
+  ServiceLocator.I.registerSingleton(
     Dolphin(),
     interfaces: {Animal, Fish},
   );
 
-  // Register a factory
-  ServiceLocator.I.registerFactory(
+  // Register a Transient
+  ServiceLocator.I.registerTransient(
     (serviceLocator, namedArgs) => Whale(),
   );
 
