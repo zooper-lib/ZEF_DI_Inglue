@@ -2,6 +2,9 @@
 
 This package offers an implementation for the `ServiceLocatorAdapter` from package [zef_di_abstractions](https://pub.dev/packages/zef_di_abstractions).
 
+> [!CAUTION]
+> This project is discontinued, as it got renamed. Check out the new package [zef_di_core](https://pub.dev/packages/zef_di_core) instead.
+
 ## Getting Started
 
 To get started with `zef_di_inglue`, add it to your project's dependency list:

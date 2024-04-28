@@ -1,3 +1,7 @@
+## 2.0.1
+
+- Marked package as discontinued
+
 ## 2.0.0
 
 - Adapted to renamed classes and functions
